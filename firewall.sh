@@ -15,4 +15,11 @@ iptables -A OUTPUT -p udp -m udp --dport 1198 -j ACCEPT
 
 iptables -A OUTPUT -j DROP
 
+if [ -n "$ROUTE" ]; then
+    # Add a route so that port forwarding still works.
+    gw=$(ip route | awk '/default/ {print $3}')
+    ip route add to $ROUTE via $gw dev eth0
+    echo "Adding route to $ROUTE via $gw"
+fi  
+
 exec "$@"
